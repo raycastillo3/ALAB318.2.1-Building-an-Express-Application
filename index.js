@@ -12,7 +12,9 @@ app.use(express.static(path.join(__dirname, "public")))
 
 //ROUTES
 const loginRoute = require('./routes/loginRoutes'); 
+const registerRoute = require('./routes/registerRoutes'); 
 app.use('/login', loginRoute);
+app.use('/register', registerRoute);
 
 
 app.get("/", middleware.requireLogin, (req, res, next) =>{
@@ -26,12 +28,7 @@ app.get('/test', (req, res) => {
     res.render('home');
 });
 
-// app.get("/profile", (req, res, next) => {
-//     res.status(200).render("profile")
-// })
-// app.get("/user", (req, res, next) =>{
-//     res.status(200).render("user")
-// })
+
 
 //debuggin: 
 // app.get('/test-static', (req, res) => {
