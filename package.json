@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/raycastillo3/ALAB318.2.1-Building-an-Express-Application#readme",
   "dependencies": {
+    "body-parser": "^1.20.3",
     "express": "^4.21.1",
     "pug": "^3.0.3"
   },
