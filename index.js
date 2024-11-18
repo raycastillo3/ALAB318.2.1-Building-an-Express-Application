@@ -4,6 +4,8 @@ const path = require('path');
 const bodyParse = require('body-parser')
 const app = express(); 
 const port = 3000; 
+const mongoose = require('./database');
+
 
 app.set("view engine", "pug"); 
 app.set("views", "views");
@@ -15,6 +17,7 @@ app.use(express.static(path.join(__dirname, "public")))
 //ROUTES
 const loginRoute = require('./routes/loginRoutes'); 
 const registerRoute = require('./routes/registerRoutes'); 
+
 app.use('/login', loginRoute);
 app.use('/register', registerRoute);
 
