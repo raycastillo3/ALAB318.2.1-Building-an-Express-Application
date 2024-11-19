@@ -5,26 +5,34 @@ const bodyParse = require('body-parser')
 const app = express(); 
 const port = 3000; 
 const mongoose = require('./database');
+const session = require('express-session')
 
 
 app.set("view engine", "pug"); 
 app.set("views", "views");
 
-app.use(bodyParse.urlencoded({ extended: false}))
-app.use(express.static(path.join(__dirname, "public")))
+app.use(bodyParse.urlencoded({ extended: false}));
+app.use(express.static(path.join(__dirname, "public")));
 
-
+app.use(session({
+    secret: "mysecret",
+    resave: true,
+    saveUninitialized: false
+}))
 //ROUTES
 const loginRoute = require('./routes/loginRoutes'); 
+const logoutRoute = require('./routes/logoutRoutes'); 
 const registerRoute = require('./routes/registerRoutes'); 
 
 app.use('/login', loginRoute);
+app.use('/logout', loginRoute);
 app.use('/register', registerRoute);
 
 
 app.get("/", middleware.requireLogin, (req, res, next) =>{
     const payload = {
-        pageTitle: "Home"
+        pageTitle: "Dashboard",
+        userLoggedIn: req.session.user
     }
     res.status(200).render("home", payload)
 }); 

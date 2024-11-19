@@ -6,7 +6,6 @@ class Database {
     }
   connect() {
     //DATABASE
-
     mongoose
       .connect(
         "mongodb+srv://amind:dbpassword123@canvascluster.0z2lj.mongodb.net/"
