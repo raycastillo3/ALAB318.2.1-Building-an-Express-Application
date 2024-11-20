@@ -31,7 +31,7 @@ const UserSchema = new Schema({
     },
     profilePicture: {
         type: String,
-        default: "/images/profilePicture"
+        default: "/images/profilePicture.png"
     }
 }, {timestamps: true});
 

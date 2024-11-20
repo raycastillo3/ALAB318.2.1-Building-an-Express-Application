@@ -23,10 +23,12 @@ app.use(session({
 const loginRoute = require('./routes/loginRoutes'); 
 const logoutRoute = require('./routes/logoutRoutes'); 
 const registerRoute = require('./routes/registerRoutes'); 
+const profileRoutes = require('./routes/profileRoutes'); 
 
 app.use('/login', loginRoute);
 app.use('/logout', loginRoute);
 app.use('/register', registerRoute);
+app.use('/profile', middleware.requireLogin, profileRoutes);
 
 
 app.get("/", middleware.requireLogin, (req, res, next) =>{
