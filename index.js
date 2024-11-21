@@ -1,15 +1,16 @@
 const express = require('express'); 
 const middleware = require('./middleware');
 const path = require('path'); 
-const bodyParse = require('body-parser')
+const bodyParse = require('body-parser');
 const app = express(); 
 const port = 3000; 
 const mongoose = require('./database');
-const session = require('express-session')
+const session = require('express-session');
 
 
 app.set("view engine", "pug"); 
 app.set("views", "views");
+
 
 app.use(bodyParse.urlencoded({ extended: false}));
 app.use(express.static(path.join(__dirname, "public")));
@@ -17,18 +18,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(session({
     secret: "mysecret",
     resave: true,
-    saveUninitialized: false
+    saveUninitialized: false,
 }))
 //ROUTES
 const loginRoute = require('./routes/loginRoutes'); 
 const logoutRoute = require('./routes/logoutRoutes'); 
 const registerRoute = require('./routes/registerRoutes'); 
 const profileRoutes = require('./routes/profileRoutes'); 
-
 app.use('/login', loginRoute);
 app.use('/logout', loginRoute);
 app.use('/register', registerRoute);
 app.use('/profile', middleware.requireLogin, profileRoutes);
+// API ROUTES
+const postsApiRoutes = require('./routes/api/posts')
+app.use('/api/posts', postsApiRoutes);
+
+
 
 
 app.get("/", middleware.requireLogin, (req, res, next) =>{
