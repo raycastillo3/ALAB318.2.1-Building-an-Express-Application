@@ -33,5 +33,41 @@ $("#submitPostButton").click(() => {
 })
 
 function createPostHtml(postData){
-    return postData.content;
+    const postedBy = postData.postedBy;
+    if (postedBy._id === undefined){
+        return console.log('user obj not poulated')
+    }
+    const fullName = postedBy.firstName + " " + postedBy.lastName;
+    const timestamp = postData.createdAt;
+
+    return `<div class='post'>
+                <div class='mainContentContainer'>
+                    <div class='userImageContainer'>
+                        <img src='${postedBy.profilePicture}'>
+                    </div>
+                    <div class='postContentContainer'>
+                        <div class='header'>
+                            <a href='/profile/${postedBy.username}' class='fullName'>${fullName}</a>
+                            <span class='username'>@${postedBy.username}</span>
+                            <span class='date'> ${timestamp} </span>
+                        </div>
+                        <div class='postBody'>
+                            <span>${postData.content}</span>
+                        </div>
+                        <div class='postFooter'>
+                            <div class='postButtonContainer'>
+                                <button>
+                                    <i class="fa-regular fa-comment"></i>
+                                </button>
+                            </div>
+                            <div class='postButtonContainer'>
+                                <button>
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        `;
 }

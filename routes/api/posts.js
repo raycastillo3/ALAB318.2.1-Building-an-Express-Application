@@ -5,8 +5,17 @@ const app = express();
 const router = express.Router();
 
 
-router.get("/", (req, res, next) =>{
-
+router.get("/", (req, res, next) => {
+    Post
+        .find()
+        .populate("postedBy")
+        .then((results) => {
+            res.status(200).send(results);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.sendStatus(400)
+        })
 }); 
 
 router.post("/", async (req, res, next) => {

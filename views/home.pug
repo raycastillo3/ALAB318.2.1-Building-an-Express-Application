@@ -2,7 +2,10 @@ extends layouts/main-layout.pug
 
 block content
     +createPostForm(userLoggedIn)
-    .postsContainer 
+    .postsContainer
+
+block scripts
+    script(src="/js/home.js") 
 
             //- .row.row-cols-1.row-cols-md-3.g-4
             //-     .col
