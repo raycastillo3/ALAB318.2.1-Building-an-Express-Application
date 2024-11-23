@@ -9,6 +9,7 @@ router.get("/", (req, res, next) => {
     Post
         .find()
         .populate("postedBy")
+        .sort({"createdAt": -1})
         .then((results) => {
             res.status(200).send(results);
         })
@@ -36,6 +37,36 @@ router.post("/", async (req, res, next) => {
         console.log(err);
         res.sendStatus(400)
     })
+}); 
+// like button
+router.put("/:id/like", async (req, res, next) => {
+    const postId = req.params.id;
+    const userId = req.session.user._id; 
+
+    const isLiked = req.session.user.likes && req.session.user.likes.includes(postId); 
+
+    const option = isLiked === true ? "$pull" : "$addToSet"
+   
+    //add user like to the db
+    req.session.user = await User.findByIdAndUpdate(
+      userId,
+      { [option]: { likes: postId } },
+      { new: true }
+    ).catch((err) => {
+      console.log(err);
+      res.sendStatus(400);
+    });
+    //add post like to the db
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      { [option]: { likes: userId } },
+      { new: true }
+    ).catch((err) => {
+      console.log(err);
+      res.sendStatus(400);
+    });
+
+    res.status(200).send(post)
 }); 
 
 module.exports = router;

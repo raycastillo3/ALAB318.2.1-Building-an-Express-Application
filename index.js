@@ -39,7 +39,8 @@ app.use('/api/posts', postsApiRoutes);
 app.get("/", middleware.requireLogin, (req, res, next) =>{
     const payload = {
         pageTitle: "Dashboard",
-        userLoggedIn: req.session.user
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
     }
     res.status(200).render("home", payload)
 }); 
