@@ -32,7 +32,7 @@ const postRoutes = require('./routes/postRoutes');
 
 
 app.use('/login', loginRoute);
-app.use('/logout', loginRoute);
+app.use('/logout', logoutRoute);
 app.use('/register', registerRoute);
 app.use('/profile', middleware.requireLogin, profileRoutes);
 app.use('/posts', postRoutes)
