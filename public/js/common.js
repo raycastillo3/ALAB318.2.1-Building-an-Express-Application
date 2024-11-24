@@ -1,9 +1,10 @@
 //share code that each pages can reuse (this file uses jquery)
-$("#postTextarea").keyup((event) => {
+$("#postTextarea, #replyTextarea").keyup((event) => {
     const textbox = $(event.target);
     const value = textbox.val().trim()
+    const isModal = textbox.parents(".modal").length == 1; 
 
-    const submitButton = $("#submitPostButton")
+    const submitButton = isModal ? $("#submitReplyButton") : $("#submitPostButton")
     
     if (submitButton.length == 0) return alert("no submit button found")
 
@@ -14,23 +15,45 @@ $("#postTextarea").keyup((event) => {
     submitButton.prop("disabled", false)
 })
 
-$("#submitPostButton").click((event) => {
-    const button = $(event.target);
-    const textbox = $("#postTextarea");
 
+$("#submitPostButton, #submitReplyButton").click((event) => {
+    const button = $(event.target);
+    const isModal = button.parents(".modal").length == 1
+    const textbox = isModal ? $("#replyTextarea") : $("#postTextarea")
     const data = {
         content: textbox.val()
+    }
+
+    if (isModal) {
+        const id = button.data().data;
+        if (id == null) return alert("Button id is null");
+        data.replyTo = id;
     }
 
     $.post("/api/posts", data, (postData, status, xhr) => {
         // console.log( postData)
 
-        const html = createPostHtml(postData);
-        $(".postsContainer").prepend(html);
-        textbox.val("");
-        button.prop("disabled", true);
+        if (postData.replyTo) {
+            location.reload();
+        } else {
+            const html = createPostHtml(postData);
+            $(".postsContainer").prepend(html);
+            textbox.val("");
+            button.prop("disabled", true);
+        }
     })
 })
+
+$("#replyModal").on("show.bs.modal", (event) => {
+    const button = $(event.relatedTarget);
+    const postId = getPostIdFromElement(button);
+    $("#submitReplyButton").data("data", postId);
+
+    $.get(`/api/posts/${postId}`, results => {
+        outputPosts(results, $("#originalPostContainer"))
+    })
+})
+$("#replyModal").on("hidden.bs.modal", () => $("#originalPostContainer").html(""))
 
 $(document).on("click", ".likeButton", (event) => {
     const button = $(event.target);
@@ -53,6 +76,16 @@ $(document).on("click", ".likeButton", (event) => {
     })
 })
 
+$(document).on("click", ".post", (event) => {
+    const element = $(event.target);
+    const postId = getPostIdFromElement(element);
+
+    if (postId !== undefined && !element.is("button")) {
+        window.location.href = '/posts/' + postId
+    }
+})
+
+
 function getPostIdFromElement (element) {
     const isRootElement = element.hasClass("post"); 
     const rootElement = isRootElement === true ? element : element.closest(".post");
@@ -72,6 +105,19 @@ function createPostHtml(postData){
 
     const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : "";
 
+    let replyFlag = ""; 
+
+    if (postData.replyTo) {
+        if (!postData.replyTo._id) {
+            return alert("Reply to is not populated")
+        } else if (!postData.replyTo.postedBy._id) {
+            return alert("Posted by is not populated")
+        }
+        const replyToUsername = postData.replyTo.postedBy.username; 
+        replyFlag = `<div class='replyFlag'>
+                        Replying to <a href='/profile/${replyToUsername}' >@${replyToUsername}</a>
+                    </div>`
+    }
     return `<div class='post' data-id='${postData._id}'>
                 <div class='mainContentContainer'>
                     <div class='userImageContainer'>
@@ -83,12 +129,13 @@ function createPostHtml(postData){
                             <span class='username'>@${postedBy.username}</span>
                             <span class='date'> ${timestamp} </span>
                         </div>
+                        ${replyFlag}
                         <div class='postBody'>
                             <span>${postData.content}</span>
                         </div>
                         <div class='postFooter'>
                             <div class='postButtonContainer'>
-                                <button>
+                                <button data-bs-toggle='modal' data-bs-target='#replyModal'>
                                     <i class="fa-regular fa-comment"></i>
                                 </button>
                             </div>
@@ -139,5 +186,19 @@ function timeDifference(current, previous) {
 
     else {
         return Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
+}
+
+function outputPosts(results, container) {
+    container.html("");
+
+    if (!Array.isArray(results)) results = [results]; 
+
+    results.forEach(result => {
+        const html = createPostHtml(result);
+        container.append(html)
+    });
+    if (results.length == 0) {
+        container.append("<span>No Discussions Yet</span>")
     }
 }

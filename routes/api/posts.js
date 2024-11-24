@@ -5,18 +5,18 @@ const app = express();
 const router = express.Router();
 
 
-router.get("/", (req, res, next) => {
-    Post
-        .find()
-        .populate("postedBy")
-        .sort({"createdAt": -1})
-        .then((results) => {
-            res.status(200).send(results);
-        })
-        .catch((err) => {
-            console.log(err);
-            res.sendStatus(400)
-        })
+router.get("/", async (req, res, next) => {
+    const results = await getPosts({});
+    res.status(200).send(results)
+}); 
+router.get("/:id", async (req, res, next) => {
+    const postId = req.params.id; 
+
+    let postData = await getPosts({_id: postId});
+    postData = postData[0];
+
+    res.status(200).send(results)
+   
 }); 
 
 router.post("/", async (req, res, next) => {
@@ -27,6 +27,10 @@ router.post("/", async (req, res, next) => {
     const postData = {
         content: req.body.content,
         postedBy: req.session.user
+    }
+
+    if (req.body.replyTo){
+        postData.replyTo = req.body.replyTo;
     }
     Post.create(postData)
     .then(async (newPost) => {
@@ -69,4 +73,16 @@ router.put("/:id/like", async (req, res, next) => {
     res.status(200).send(post)
 }); 
 
+
+async function getPosts(filter) {
+  let results = await Post.find(filter)
+    .populate("postedBy")
+    .populate("replyTo")
+    .sort({ createdAt: -1 })
+    .catch((err) => {
+      console.log(err);
+    });
+    results = await User.populate(results, {path: "replyTo.postedBy"})
+    return results
+}
 module.exports = router;

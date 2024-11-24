@@ -16,7 +16,11 @@ const PostSchema = new Schema(
     likes: [{ 
       type: Schema.Types.ObjectId, 
       ref: "User" 
-  }]
+  }],
+  replyTo: {
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
+  }
   },
   { timestamps: true }
 );
