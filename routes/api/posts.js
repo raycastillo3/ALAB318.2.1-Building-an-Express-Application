@@ -15,7 +15,7 @@ router.get("/:id", async (req, res, next) => {
     let postData = await getPosts({_id: postId});
     postData = postData[0];
 
-    res.status(200).send(results)
+    res.status(200).send(postData)
    
 }); 
 
