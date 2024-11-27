@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 
 class Database {
     constructor() {
@@ -8,7 +10,7 @@ class Database {
       //DATABASE
       mongoose
         .connect(
-          "mongodb+srv://amind:dbpassword123@canvascluster.0z2lj.mongodb.net/"
+          process.env.MONGO_URI
         )
         .then(() => {
           console.log("database connection succesful");

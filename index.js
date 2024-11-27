@@ -40,9 +40,6 @@ app.use('/posts', postRoutes)
 const postsApiRoutes = require('./routes/api/posts')
 app.use('/api/posts', postsApiRoutes);
 
-
-
-
 app.get("/", middleware.requireLogin, (req, res, next) =>{
     const payload = {
         pageTitle: "Dashboard",

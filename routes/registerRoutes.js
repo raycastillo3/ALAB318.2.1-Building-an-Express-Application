@@ -48,10 +48,10 @@ router.post("/", async (req, res, next) =>{
             })
         } else {
            if (email == user.email) {
-            payload.errorMessage = "Email already exists"
-        } else {
-            payload.errorMessage = "Username already exists"
-           }
+                payload.errorMessage = "Email already exists"
+            } else {
+                payload.errorMessage = "Username already exists"
+            }
            res.status(200).render("register", payload);
         }
         // res.status(201).send("success");
