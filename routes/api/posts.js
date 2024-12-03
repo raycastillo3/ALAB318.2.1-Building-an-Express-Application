@@ -15,14 +15,6 @@ router.get("/:id", async (req, res, next) => {
     let postData = await getPosts({_id: postId});
     postData = postData[0];
 
-    const results = {
-      postData: postData
-    }
-    if (postData.replyTo !== undefined) {
-      results.replyTo = postData.replyTo; 
-
-    }
-    results.replies = await getPosts({replyTo: postId})
     res.status(200).send(postData)
    
 }); 
@@ -32,7 +24,6 @@ router.post("/", async (req, res, next) => {
         console.log("content param not sent with request");
         return res.sendStatus(400);
     }
-    
     const postData = {
         content: req.body.content,
         postedBy: req.session.user
