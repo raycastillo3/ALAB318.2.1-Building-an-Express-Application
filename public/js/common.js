@@ -50,7 +50,7 @@ $("#replyModal").on("show.bs.modal", (event) => {
     $("#submitReplyButton").data("data", postId);
 
     $.get(`/api/posts/${postId}`, results => {
-        outputPosts(results, $("#originalPostContainer"))
+        outputPosts(results.postData, $("#originalPostContainer"))
     })
 })
 $("#replyModal").on("hidden.bs.modal", () => $("#originalPostContainer").html(""))
@@ -97,7 +97,8 @@ function getPostIdFromElement (element) {
 
 function createPostHtml(postData){
     const postedBy = postData.postedBy;
-    if (postedBy._id === undefined){
+    // console.log(postData.postedBy._id)
+    if (postData.postedBy._id === undefined){
         return console.log('user obj not poulated')
     }
     const fullName = postedBy.firstName + " " + postedBy.lastName;
@@ -107,7 +108,7 @@ function createPostHtml(postData){
 
     let replyFlag = ""; 
 
-    if (postData.replyTo) {
+    if (postData.replyTo && postData.replyTo._id) {
         if (!postData.replyTo._id) {
             return alert("Reply to is not populated")
         } else if (!postData.replyTo.postedBy._id) {
@@ -201,4 +202,20 @@ function outputPosts(results, container) {
     if (results.length == 0) {
         container.append("<span>No Discussions Yet</span>")
     }
+}
+
+
+function outputPostsWithReplies(results, container) {
+    container.html("");
+    if (results.replyTo !== undefined && results.replyTo._id !== undefined) {
+        const html = createPostHtml(results.replyTo); 
+        container.append(html);
+    }
+    const mainPostHtml = createPostHtml(results.postData); 
+    container.append(mainPostHtml);
+
+    results.replies.forEach(result => {
+        const html = createPostHtml(result);
+        container.append(html)
+    });
 }

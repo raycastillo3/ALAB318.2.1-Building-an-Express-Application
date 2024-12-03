@@ -10,7 +10,7 @@ class Database {
       //DATABASE
       mongoose
         .connect(
-          process.env.MONGO_URI
+          "mongodb+srv://amind:dbpassword123@canvascluster.0z2lj.mongodb.net/"
         )
         .then(() => {
           console.log("database connection succesful");
